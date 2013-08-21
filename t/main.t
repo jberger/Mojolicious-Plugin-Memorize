@@ -21,9 +21,9 @@ isnt Mojo::Util::steady_time, $time, 'time has advanced';
 $t->get_ok('/')
   ->text_is( p => $time, 'template memorized' );
 
-ok exists $t->app->memorize->{test}, 'memorized content found by key';
+ok exists $t->app->memorize->cache->{test}, 'memorized content found by key';
 
-$t->app->memorize_expire('test');
+$t->app->memorize->expire('test');
 
 $t->get_ok('/')
   ->text_isnt( p => $time, 'memorized template manually expired' );
