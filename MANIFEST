@@ -3,6 +3,7 @@ Changes
 ex/access.pl
 lib/Mojolicious/Plugin/Memorize.pm
 MANIFEST			This list of files
-t/main.t
-META.yml
 META.json
+META.yml
+README.pod
+t/main.t
