@@ -5,7 +5,7 @@ any '/' => 'index';
 
 any '/reset' => sub {
   my $self = shift;
-  $self->memorize_expire('access');
+  $self->memorize->expire('access');
   $self->redirect_to('/');
 };
 
