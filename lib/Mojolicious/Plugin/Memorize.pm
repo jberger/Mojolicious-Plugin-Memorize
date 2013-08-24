@@ -93,29 +93,41 @@ The C<memorize> helper derives from the helper that was removed from C<Mojolicio
 
 =head1 HELPERS
 
-=head2 C<memorize( [$name,] [$args,] [$template_block] )>
+=over
+
+=item C<memorize( [$name,] [$args,] [$template_block] )>
 
 When called with arguments, the helper behaves as the old helper did. It takes as many as three arguments, the final of which must be a template block (begin/end, see L<Mojolicious::Lite/Blocks>) to be memorized. The first argument may be a string which is the name (key) of the memorized template (used for later access), if this is not provided one will be generated. A hashref may also be passed in which is used for additional arguments; as of this writing, the only available argument is C<expires>. If C<expires> is greater than zero and less than the current C<time> then the template block is re-evaluated. In this case the return value is the memorized template result.
 
 When called without arguments, the plugin object is returned, allowing the use of other plugin methods or access to the plugin's cache.
 
+=back
+
 =head1 ATTRIBUTES
 
-=head2 C<cache>
+=over
+
+=item C<cache>
 
 A hash reference containing the memorized template content and other data. 
 
+=back
+
 =head1 METHODS
 
-=head2 C<expire( $name )>
+=over
+
+=item C<expire( $name )>
 
 This method allows for manually expiring a memorized template block. This may useful if the template is set to never expire or when the underlying content is known to have changed.
 
 This is an example of the utility of having access to the underlying hash. In the original implementation of the core helper, this access was not available.
 
-=head2 C<register>
+=item C<register>
 
 This method is called upon loading the plugin and probably is not useful for other purposes.
+
+=back
 
 =head1 SEE ALSO
 
