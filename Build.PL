@@ -24,6 +24,7 @@ my $builder = Module::Build->new(
     },
     no_index => {
       file      => [ 'README.pod' ],
+      directory => [ 'ex', 't' ],
     },
   }
 );
