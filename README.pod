@@ -93,13 +93,19 @@ L<Mojolicious::Guides::Rendering>
 L<http://github.com/jberger/Mojolicious-Plugin-Memorize> 
 
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Joel Berger, E<lt>joel.a.berger@gmail.comE<gt>
+=over
+
+=item Joel Berger, E<lt>joel.a.berger@gmail.comE<gt>
+
+=item Sebastian Riedel 
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2013 by Joel Berger
+Copyright (C) 2013 by Joel Berger and Sebastian Riedel
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
