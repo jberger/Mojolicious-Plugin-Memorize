@@ -9,7 +9,6 @@ has cache => sub { +{} };
 sub register {
   my ($plugin, $app) = @_;
 
-  my %mem;
   $app->helper(
     memorize => sub {
       my $c = shift;
