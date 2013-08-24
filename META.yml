@@ -13,6 +13,9 @@ meta-spec:
   version: 1.4
 name: Mojolicious-Plugin-Memorize
 no_index:
+  directory:
+    - ex
+    - t
   file:
     - README.pod
 provides:
