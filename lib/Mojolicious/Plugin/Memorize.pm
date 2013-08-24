@@ -4,6 +4,8 @@ use Mojo::Base 'Mojolicious::Plugin';
 our $VERSION = '0.01';
 $VERSION = eval $VERSION;
 
+use Mojo::Util;
+
 has cache => sub { +{} };
 
 sub register {
@@ -22,7 +24,7 @@ sub register {
 
 sub expire {
   my ($self, $name) = @_;
-  $self->cache->{$name}{expires} = 1;
+  delete $self->cache->{$name};
 }
 
 sub memorize {
@@ -37,21 +39,38 @@ sub memorize {
   $name ||= join '', map { $_ || '' } (caller(1))[0 .. 3];
 
   # Expire old results
-  my $expires;
-  if (exists $mem->{$name}) {
-    $expires = $mem->{$name}{expires};
-    delete $mem->{$name}
-      if $expires > 0 && $mem->{$name}{expires} < time;
-  } else {
-    $expires = $args->{expires} || 0;
-  }
+  $self->_check_expired($name);
 
   # Memorized result
   return $mem->{$name}{content} if exists $mem->{$name};
 
+  # Determine new expiration time
+  my $expires = 0;
+  if ( my $delta = $args->{duration} ) {
+    $expires = $delta + Mojo::Util::steady_time;
+  } elsif ( my $time = $args->{expires} ) {
+    my $delta = $time - time;
+    $expires = $delta + Mojo::Util::steady_time;
+  }
+
   # Memorize new result
   $mem->{$name}{expires} = $expires;
   return $mem->{$name}{content} = $cb->();
+}
+
+sub _check_expired {
+  my ($self, $name) = @_;
+  my $mem = $self->cache;
+
+  return unless exists $mem->{$name}; # avoid autoviv
+
+  return unless my $expires = $mem->{$name}{expires};
+
+  return unless $expires >= Mojo::Util::steady_time;
+
+  delete $mem->{$name};
+
+  return 1;
 }
 
 1;
