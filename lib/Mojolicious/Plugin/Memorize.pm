@@ -42,7 +42,7 @@ sub memorize {
   if (exists $mem->{$name}) {
     $expires = $mem->{$name}{expires};
     delete $mem->{$name}
-    if $expires > 0 && $mem->{$name}{expires} < time;
+      if $expires > 0 && $mem->{$name}{expires} < time;
   } else {
     $expires = $args->{expires} || 0;
   }
