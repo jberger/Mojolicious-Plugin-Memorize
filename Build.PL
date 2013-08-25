@@ -11,7 +11,7 @@ my $builder = Module::Build->new(
   
   requires => {
     'perl' => '5.10.1',
-    'Mojolicious' => 0,
+    'Mojolicious' => '3.92', # Mojo::Util::steady_time
   },
   configure_requires => {
     'Module::Build' => 0.38,

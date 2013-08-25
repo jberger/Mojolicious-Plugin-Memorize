@@ -6,4 +6,5 @@ MANIFEST			This list of files
 META.json
 META.yml
 README.pod
+t/behavior.t
 t/main.t

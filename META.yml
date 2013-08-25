@@ -23,7 +23,7 @@ provides:
     file: lib/Mojolicious/Plugin/Memorize.pm
     version: 0.01
 requires:
-  Mojolicious: 0
+  Mojolicious: 3.92
   perl: v5.10.1
 resources:
   bugtracker: http://github.com/jberger/Mojolicious-Plugin-Memorize/issues

@@ -13,7 +13,7 @@ sub register {
 
   $app->helper(
     memorize => sub {
-      my $c = shift;
+      shift;
       return $plugin unless @_;
       unshift @_, $plugin;
       goto $plugin->can('memorize'); # for the sake of the auto-naming
@@ -29,6 +29,7 @@ sub expire {
 
 sub memorize {
   my $self = shift;
+
   my $mem = $self->cache;
 
   return '' unless ref(my $cb = pop) eq 'CODE';
@@ -38,11 +39,8 @@ sub memorize {
   # Default name
   $name ||= join '', map { $_ || '' } (caller(1))[0 .. 3];
 
-  # Expire old results
-  $self->_check_expired($name);
-
-  # Memorized result
-  return $mem->{$name}{content} if exists $mem->{$name};
+  # Return memorized result or invalidate cached
+  return $mem->{$name}{content} if $self->_check_cached($name);
 
   # Determine new expiration time
   my $expires = 0;
@@ -58,19 +56,19 @@ sub memorize {
   return $mem->{$name}{content} = $cb->();
 }
 
-sub _check_expired {
+sub _check_cached {
   my ($self, $name) = @_;
   my $mem = $self->cache;
 
   return unless exists $mem->{$name}; # avoid autoviv
 
-  return unless my $expires = $mem->{$name}{expires};
+  return 1 unless my $expires = $mem->{$name}{expires};
 
-  return unless $expires >= Mojo::Util::steady_time;
+  return 1 unless Mojo::Util::steady_time >= $expires;
 
   delete $mem->{$name};
 
-  return 1;
+  return 0;
 }
 
 1;
@@ -110,9 +108,9 @@ template, to prevent re-evaluation. This may be useful when a portion of your
 response is expensive to generate but changes rarely (a menu for example).
 
 The C<memorize> helper derives from the helper that was removed from
-C<Mojolicious> at version 4.0, with one tiny addition, the underlying plugin
-object is returned when no arguments are passed. This makes more flexible
-interaction possible, including, as an example, the C<expire> method.
+C<Mojolicious> at version 4.0, with two major changes. The underlying plugin
+object is returned when no arguments are passed and the system is resiliant
+against time jumps.
 
 =head1 HELPERS
 
@@ -120,15 +118,8 @@ interaction possible, including, as an example, the C<expire> method.
 
 =item C<memorize( [$name,] [$args,] [$template_block] )>
 
-When called with arguments, the helper behaves as the old helper did. It takes
-as many as three arguments, the final of which must be a template block
-(begin/end, see L<Mojolicious::Lite/Blocks>) to be memorized. The first argument
- may be a string which is the name (key) of the memorized template (used for
-later access), if this is not provided one will be generated. A hashref may also
-be passed in which is used for additional arguments; as of this writing, the
-only available argument is C<expires>. If C<expires> is greater than zero and
-less than the current C<time> then the template block is re-evaluated. In this
-case the return value is the memorized template result.
+When called with arguments, this helper wraps the functionality of the
+C<memorize> method below. See its documentation for usage.
 
 When called without arguments, the plugin object is returned, allowing the use
 of other plugin methods or access to the plugin's cache.
@@ -157,6 +148,24 @@ known to have changed.
 
 This is an example of the utility of having access to the underlying hash. In
 the original implementation of the core helper, this access was not available.
+
+=item C<memorize( [$name,] [$args,] $template_block )>
+
+This method behaves as the old helper did. It takes as many as three arguments,
+the final of which must be a template block (see L<Mojolicious::Lite/Blocks>) to
+be memorized. The first argument may be a string which is the name (key) of the
+memorized template (used for later access); if this is not provided one will be
+generated. A hashref may also be passed in which is used for additional
+arguments.
+
+As of this writing, the only available argument are C<duration> and C<expires>. 
+The C<duration> key specifies the number of seconds that the template should be
+memorized, while the C<expires> key specifies a time (epoch seconds) after which
+the template should be re-evaluated. C<duration> is the recommened usage,
+C<expires> is provided for historical reasons, and is implemented using
+C<duration>. If both are provided, C<duration> is used.
+
+Note that either key may be set to zero to prevent timed expiration.
 
 =item C<register>
 
