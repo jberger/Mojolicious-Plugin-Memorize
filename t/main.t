@@ -12,7 +12,7 @@ my $t = Test::Mojo->new;
 
 
 $t->get_ok('/', 'first render');
-my $time = $t->tx->res->dom('p')->pluck('text');
+my $time = $t->tx->res->dom('p')->map('text')->join('');
 like $time, qr/^[.\d]+$/, 'time rendered';
 
 sleep 2;
